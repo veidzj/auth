@@ -4,6 +4,7 @@ using Domain.Usecases;
 using Moq;
 using NUnit.Framework;
 using Presentation.Controllers;
+using Presentation.Exceptions;
 using Presentation.Implementations;
 using Presentation.Protocols;
 using System;

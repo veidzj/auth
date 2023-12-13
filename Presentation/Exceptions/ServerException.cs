@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Domain.Errors
+namespace Presentation.Exceptions
 {
   public class ServerException : Exception
   {

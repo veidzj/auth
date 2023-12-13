@@ -30,7 +30,7 @@ namespace Presentation.Controllers
           AddedAt = dateTimeProvider.UtcNow
         };
         await addAccount.Add(addAccountInput);
-        return HttpHelper.BadRequest(new Exception(""));
+        return HttpHelper.BadRequest(new Exception());
       }
       catch (ValidationException validationException)
       {
