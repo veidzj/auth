@@ -2,7 +2,9 @@
 using Moq;
 using NUnit.Framework;
 using Presentation.Controllers;
+using Presentation.Helpers;
 using Presentation.Protocols;
+using System;
 
 namespace Tests.Presentation.Controllers
 {
@@ -38,6 +40,14 @@ namespace Tests.Presentation.Controllers
       SignUpControllerRequest request = MockRequest();
       sut.Handle(request);
       validationMock.Verify(v => v.Validate(It.Is<object>(obj => obj == request)), Times.Once);
+    }
+
+    [Test]
+    public void ShouldReturnBadRequestIfValidationThrows()
+    {
+      SignUpControllerRequest request = MockRequest();
+      var response = sut.Handle(request);
+      Assert.That(response.StatusCode, Is.EqualTo(400));
     }
   }
 }
