@@ -1,7 +1,7 @@
-﻿using Presentation.Protocols;
+using Presentation.Protocols;
 using System;
 
-namespace Presentation.Helpers
+namespace Presentation.Providers
 {
   public class DateTimeProvider : IDateTimeProvider
   {
