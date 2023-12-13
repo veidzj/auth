@@ -48,7 +48,7 @@ namespace Tests.Presentation.Controllers
       authenticationMock = new Mock<IAuthentication>();
       account = MockAccount.Mock();
       request = MockRequest();
-      authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).ReturnsAsync(account);
+      authenticationMock.Setup(authentication => authentication.Authenticate(It.IsAny<IAuthenticationInput>())).ReturnsAsync(account);
       sut = new SignUpController(validationMock.Object, addAccountMock.Object, dateTimeProviderMock.Object, authenticationMock.Object);
     }
 
@@ -56,14 +56,14 @@ namespace Tests.Presentation.Controllers
     public async Task ShouldCallValidationWithCorrectValues()
     {
       await sut.Handle(request);
-      validationMock.Verify(v => v.Validate(It.Is<object>(obj => obj == request)), Times.Once);
+      validationMock.Verify(validation => validation.Validate(It.Is<object>(obj => obj == request)), Times.Once);
     }
 
     [Test]
     public async Task ShouldReturnBadRequestIfValidationThrows()
     {
       string exceptionMessage = faker.Random.Word();
-      validationMock.Setup(v => v.Validate(It.IsAny<object>())).Throws(new ValidationException(exceptionMessage));
+      validationMock.Setup(validation => validation.Validate(It.IsAny<object>())).Throws(new ValidationException(exceptionMessage));
       IResponse response = await sut.Handle(request);
       Assert.Multiple(() =>
       {
@@ -78,7 +78,7 @@ namespace Tests.Presentation.Controllers
     public async Task ShouldCallAddAccountWithCorrectValues()
     {
       DateTime fakeDate = faker.Date.Recent();
-      dateTimeProviderMock.Setup(m => m.UtcNow).Returns(fakeDate);
+      dateTimeProviderMock.Setup(dateTimeProvider => dateTimeProvider.UtcNow).Returns(fakeDate);
       IAddAccountInput addAccountInput = new AddAccountInput()
       {
         UserName = request.UserName!,
@@ -87,7 +87,7 @@ namespace Tests.Presentation.Controllers
         AddedAt = fakeDate
       };
       await sut.Handle(request);
-      addAccountMock.Verify(v => v.Add(It.Is<IAddAccountInput>(input =>
+      addAccountMock.Verify(addAccount => addAccount.Add(It.Is<IAddAccountInput>(input =>
         input.UserName == request.UserName &&
         input.Email == request.Email &&
         input.Password == request.Password &&
@@ -99,7 +99,7 @@ namespace Tests.Presentation.Controllers
     public async Task ShouldReturnConflictIfAddAccountThrowsEmailInUseException()
     {
       string exceptionMessage = faker.Random.Word();
-      addAccountMock.Setup(a => a.Add(It.IsAny<IAddAccountInput>())).Throws(new EmailInUseException(exceptionMessage));
+      addAccountMock.Setup(addAccount => addAccount.Add(It.IsAny<IAddAccountInput>())).Throws(new EmailInUseException(exceptionMessage));
       IResponse response = await sut.Handle(request);
       Assert.Multiple(() =>
       {
@@ -113,7 +113,7 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldReturnInternalServerErrorIfAddAccountThrows()
     {
-      addAccountMock.Setup(a => a.Add(It.IsAny<IAddAccountInput>())).Throws(new Exception());
+      addAccountMock.Setup(addAccount => addAccount.Add(It.IsAny<IAddAccountInput>())).Throws(new Exception());
       IResponse response = await sut.Handle(request);
       Assert.Multiple(() =>
       {
@@ -133,7 +133,7 @@ namespace Tests.Presentation.Controllers
         Password = request.Password!
       };
       await sut.Handle(request);
-      authenticationMock.Verify(v => v.Authenticate(It.Is<IAuthenticationInput>(input =>
+      authenticationMock.Verify(authentication => authentication.Authenticate(It.Is<IAuthenticationInput>(input =>
         input.Email == request.Email &&
         input.Password == request.Password
       )), Times.Once);
@@ -143,7 +143,7 @@ namespace Tests.Presentation.Controllers
     public async Task ShouldReturnUnauthorizedIfAuthenticationThrowsInvalidCredentialsException()
     {
       string exceptionMessage = faker.Random.Word();
-      authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).Throws(new InvalidCredentialsException(exceptionMessage));
+      authenticationMock.Setup(authentication => authentication.Authenticate(It.IsAny<IAuthenticationInput>())).Throws(new InvalidCredentialsException(exceptionMessage));
       IResponse response = await sut.Handle(request);
       Assert.Multiple(() =>
       {
@@ -157,7 +157,7 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldReturnInternalServerErrorIfAuthenticationThrows()
     {
-      authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).Throws(new Exception());
+      authenticationMock.Setup(authentication => authentication.Authenticate(It.IsAny<IAuthenticationInput>())).Throws(new Exception());
       IResponse response = await sut.Handle(request);
       Assert.Multiple(() =>
       {
