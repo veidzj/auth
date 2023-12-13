@@ -1,4 +1,5 @@
-﻿using Presentation.Implementations;
+﻿using Domain.Errors;
+using Presentation.Implementations;
 using Presentation.Protocols;
 using System;
 
@@ -21,6 +22,15 @@ namespace Presentation.Helpers
       {
         StatusCode = 409,
         Body = exception
+      };
+    }
+
+    public static IResponse InternalServerError()
+    {
+      return new Response()
+      {
+        StatusCode = 500,
+        Body = new ServerException()
       };
     }
   }

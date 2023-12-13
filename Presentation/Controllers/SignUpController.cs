@@ -40,6 +40,10 @@ namespace Presentation.Controllers
       {
         return HttpHelper.Conflict(emailInUseException);
       }
+      catch (Exception)
+      {
+        return HttpHelper.InternalServerError();
+      }
     }
   }
 }
