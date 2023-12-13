@@ -1,5 +1,6 @@
 ﻿using Bogus;
 using Domain.Errors;
+using Domain.Models;
 using Domain.Usecases;
 using Moq;
 using NUnit.Framework;
@@ -23,6 +24,8 @@ namespace Tests.Presentation.Controllers
     private Mock<IAuthentication> authenticationMock;
     private SignUpController sut;
 
+    private Account account;
+
     private SignUpControllerRequest MockRequest()
     {
       SignUpControllerRequest request = new()
@@ -42,6 +45,12 @@ namespace Tests.Presentation.Controllers
       addAccountMock = new Mock<IAddAccount>();
       dateTimeProviderMock = new Mock<IDateTimeProvider>();
       authenticationMock = new Mock<IAuthentication>();
+      account = new()
+      {
+        UserName = faker.Internet.UserName(),
+        AccessToken = faker.Random.Uuid().ToString()
+      };
+      authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).ReturnsAsync(account);
       sut = new SignUpController(validationMock.Object, addAccountMock.Object, dateTimeProviderMock.Object, authenticationMock.Object);
     }
 
@@ -166,6 +175,21 @@ namespace Tests.Presentation.Controllers
         Assert.That(response.Body, Is.InstanceOf<ServerException>());
         ServerException? exception = response.Body as ServerException;
         Assert.That(exception?.Message, Is.EqualTo("Internal Server Error"));
+      });
+    }
+
+    [Test]
+    public async Task ShouldReturnOkOnSuccess()
+    {
+      SignUpControllerRequest request = MockRequest();
+      IResponse response = await sut.Handle(request);
+      Assert.Multiple(() =>
+      {
+        Assert.That(response.StatusCode, Is.EqualTo(200));
+        Assert.That(response.Body, Is.InstanceOf<Account>());
+        Account? responseAccount = response.Body as Account;
+        Assert.That(responseAccount?.UserName, Is.EqualTo(account.UserName));
+        Assert.That(responseAccount?.AccessToken, Is.EqualTo(account.AccessToken));
       });
     }
   }
