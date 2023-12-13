@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 
 namespace Domain.Usecases
 {
@@ -7,6 +8,7 @@ namespace Domain.Usecases
     string UserName { get; }
     string Email { get; }
     string Password { get; }
+    DateTime AddedAt { get; }
   }
 
   public interface IAddAccount

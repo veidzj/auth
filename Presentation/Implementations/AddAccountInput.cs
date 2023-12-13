@@ -1,4 +1,5 @@
 ﻿using Domain.Usecases;
+using System;
 
 namespace Presentation.Implementations
 {
@@ -9,5 +10,6 @@ namespace Presentation.Implementations
     public required string Email { get; set; }
 
     public required string Password { get; set; }
+    public required DateTime AddedAt { get; set; }
   }
 }

@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Presentation.Controllers;
 using Presentation.Implementations;
 using Presentation.Protocols;
+using System;
 using System.Threading.Tasks;
 using ValidationException = Domain.Errors.ValidationException;
 
@@ -16,6 +17,7 @@ namespace Tests.Presentation.Controllers
     private Faker faker;
     private Mock<IValidation> validationMock;
     private Mock<IAddAccount> addAccountMock;
+    private Mock<IDateTimeProvider> dateTimeProviderMock;
     private SignUpController sut;
 
     private SignUpControllerRequest MockRequest()
@@ -35,7 +37,8 @@ namespace Tests.Presentation.Controllers
       faker = new Faker();
       validationMock = new Mock<IValidation>();
       addAccountMock = new Mock<IAddAccount>();
-      sut = new SignUpController(validationMock.Object, addAccountMock.Object);
+      dateTimeProviderMock = new Mock<IDateTimeProvider>();
+      sut = new SignUpController(validationMock.Object, addAccountMock.Object, dateTimeProviderMock.Object);
     }
 
     [Test]
@@ -66,17 +69,21 @@ namespace Tests.Presentation.Controllers
     public async Task ShouldCallAddAccountWithCorrectValues()
     {
       SignUpControllerRequest request = MockRequest();
+      DateTime fakeDate = faker.Date.Recent();
+      dateTimeProviderMock.Setup(m => m.UtcNow).Returns(fakeDate);
       IAddAccountInput addAccountInput = new AddAccountInput()
       {
         UserName = request.UserName!,
         Email = request.Email!,
-        Password = request.Password!
+        Password = request.Password!,
+        AddedAt = fakeDate
       };
       await sut.Handle(request);
       addAccountMock.Verify(v => v.Add(It.Is<IAddAccountInput>(input =>
         input.UserName == request.UserName &&
         input.Email == request.Email &&
-        input.Password == request.Password
+        input.Password == request.Password &&
+        input.AddedAt == fakeDate
       )), Times.Once);
     }
   }

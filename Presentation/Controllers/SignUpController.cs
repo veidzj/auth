@@ -15,7 +15,7 @@ namespace Presentation.Controllers
     public string? Password { get; set; }
   }
 
-  public class SignUpController(IValidation validation, IAddAccount addAccount)
+  public class SignUpController(IValidation validation, IAddAccount addAccount, IDateTimeProvider dateTimeProvider)
   {
     public async Task<IResponse> Handle(SignUpControllerRequest request)
     {
@@ -26,7 +26,8 @@ namespace Presentation.Controllers
         {
           UserName = request.UserName!,
           Email = request.Email!,
-          Password = request.Password!
+          Password = request.Password!,
+          AddedAt = dateTimeProvider.UtcNow
         };
         await addAccount.Add(addAccountInput);
         return HttpHelper.BadRequest(new Exception(""));
