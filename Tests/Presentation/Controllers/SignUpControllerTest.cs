@@ -137,5 +137,21 @@ namespace Tests.Presentation.Controllers
         input.Password == request.Password
       )), Times.Once);
     }
+
+    [Test]
+    public async Task ShouldReturnUnauthorizedIfAuthenticationThrowsInvalidCredentialsException()
+    {
+      SignUpControllerRequest request = MockRequest();
+      string exceptionMessage = faker.Random.Word();
+      authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).Throws(new InvalidCredentialsException(exceptionMessage));
+      IResponse response = await sut.Handle(request);
+      Assert.Multiple(() =>
+      {
+        Assert.That(response.StatusCode, Is.EqualTo(401));
+        Assert.That(response.Body, Is.InstanceOf<InvalidCredentialsException>());
+        InvalidCredentialsException? exception = response.Body as InvalidCredentialsException;
+        Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
+      });
+    }
   }
 }
