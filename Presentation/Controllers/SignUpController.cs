@@ -1,4 +1,6 @@
-﻿using Presentation.Protocols;
+﻿using Presentation.Helpers;
+using Presentation.Protocols;
+using System;
 
 namespace Presentation.Controllers
 {
@@ -11,9 +13,10 @@ namespace Presentation.Controllers
 
   public class SignUpController(IValidation validation)
   {
-    public void Handle(SignUpControllerRequest request)
+    public IResponse Handle(SignUpControllerRequest request)
     {
       validation.Validate(request);
+      return HttpHelper.BadRequest(new Exception("Validation Error"));
     }
   }
 }
