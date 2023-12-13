@@ -20,6 +20,7 @@ namespace Tests.Presentation.Controllers
     private Mock<IValidation> validationMock;
     private Mock<IAddAccount> addAccountMock;
     private Mock<IDateTimeProvider> dateTimeProviderMock;
+    private Mock<IAuthentication> authenticationMock;
     private SignUpController sut;
 
     private SignUpControllerRequest MockRequest()
@@ -40,7 +41,8 @@ namespace Tests.Presentation.Controllers
       validationMock = new Mock<IValidation>();
       addAccountMock = new Mock<IAddAccount>();
       dateTimeProviderMock = new Mock<IDateTimeProvider>();
-      sut = new SignUpController(validationMock.Object, addAccountMock.Object, dateTimeProviderMock.Object);
+      authenticationMock = new Mock<IAuthentication>();
+      sut = new SignUpController(validationMock.Object, addAccountMock.Object, dateTimeProviderMock.Object, authenticationMock.Object);
     }
 
     [Test]
@@ -118,6 +120,22 @@ namespace Tests.Presentation.Controllers
         ServerException? exception = response.Body as ServerException;
         Assert.That(exception?.Message, Is.EqualTo("Internal Server Error"));
       });
+    }
+
+    [Test]
+    public async Task ShouldCallAuthenticationWithCorrectValues()
+    {
+      SignUpControllerRequest request = MockRequest();
+      IAuthenticationInput authenticationInput = new AuthenticationInput()
+      {
+        Email = request.Email!,
+        Password = request.Password!
+      };
+      await sut.Handle(request);
+      authenticationMock.Verify(v => v.Authenticate(It.Is<IAuthenticationInput>(input =>
+        input.Email == request.Email &&
+        input.Password == request.Password
+      )), Times.Once);
     }
   }
 }
