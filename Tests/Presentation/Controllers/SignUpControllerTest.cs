@@ -10,6 +10,7 @@ using Presentation.Implementations;
 using Presentation.Protocols;
 using System;
 using System.Threading.Tasks;
+using Tests.Domain.Mocks;
 using ValidationException = Domain.Errors.ValidationException;
 
 namespace Tests.Presentation.Controllers
@@ -36,15 +37,6 @@ namespace Tests.Presentation.Controllers
       return request;
     }
 
-    private Account MakeAccount()
-    {
-      return new Account()
-      {
-        UserName = faker.Internet.UserName(),
-        AccessToken = faker.Random.Uuid().ToString()
-      };
-    }
-
     [SetUp]
     public void Setup()
     {
@@ -53,7 +45,7 @@ namespace Tests.Presentation.Controllers
       addAccountMock = new Mock<IAddAccount>();
       dateTimeProviderMock = new Mock<IDateTimeProvider>();
       authenticationMock = new Mock<IAuthentication>();
-      account = MakeAccount();
+      account = MockAccount.Mock();
       authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).ReturnsAsync(account);
       sut = new SignUpController(validationMock.Object, addAccountMock.Object, dateTimeProviderMock.Object, authenticationMock.Object);
     }
