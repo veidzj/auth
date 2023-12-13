@@ -16,7 +16,12 @@ namespace Presentation.Controllers
     public string? Password { get; set; }
   }
 
-  public class SignUpController(IValidation validation, IAddAccount addAccount, IDateTimeProvider dateTimeProvider, IAuthentication authentication)
+  public class SignUpController(
+    IValidation validation,
+    IAddAccount addAccount,
+    IDateTimeProvider dateTimeProvider,
+    IAuthentication authentication
+  ) : IController<SignUpController, SignUpControllerRequest>
   {
     public async Task<IResponse> Handle(SignUpControllerRequest request)
     {
