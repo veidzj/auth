@@ -16,6 +16,15 @@ namespace Presentation.Helpers
       };
     }
 
+    public static IResponse Unauthorized(Exception exception)
+    {
+      return new Response()
+      {
+        StatusCode = 401,
+        Body = exception
+      };
+    }
+
     public static IResponse Conflict(Exception exception)
     {
       return new Response()

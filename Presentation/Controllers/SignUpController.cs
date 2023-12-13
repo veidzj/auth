@@ -46,6 +46,10 @@ namespace Presentation.Controllers
       {
         return HttpHelper.Conflict(emailInUseException);
       }
+      catch (InvalidCredentialsException invalidCredentialsException)
+      {
+        return HttpHelper.Unauthorized(invalidCredentialsException);
+      }
       catch (Exception)
       {
         return HttpHelper.InternalServerError();
