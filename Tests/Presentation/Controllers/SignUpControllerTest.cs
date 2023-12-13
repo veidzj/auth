@@ -1,4 +1,5 @@
 ﻿using Bogus;
+using Domain.Errors;
 using Domain.Usecases;
 using Moq;
 using NUnit.Framework;
@@ -85,6 +86,22 @@ namespace Tests.Presentation.Controllers
         input.Password == request.Password &&
         input.AddedAt == fakeDate
       )), Times.Once);
+    }
+
+    [Test]
+    public async Task ShouldReturnConflictIfAddAccountThrowsEmailInUseException()
+    {
+      SignUpControllerRequest request = MockRequest();
+      string exceptionMessage = faker.Random.Word();
+      addAccountMock.Setup(a => a.Add(It.IsAny<IAddAccountInput>())).Throws(new EmailInUseException(exceptionMessage));
+      IResponse response = await sut.Handle(request);
+      Assert.Multiple(() =>
+      {
+        Assert.That(response.StatusCode, Is.EqualTo(409));
+        Assert.That(response.Body, Is.InstanceOf<EmailInUseException>());
+        EmailInUseException? exception = response.Body as EmailInUseException;
+        Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
+      });
     }
   }
 }
