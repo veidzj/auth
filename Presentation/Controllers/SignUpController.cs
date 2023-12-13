@@ -15,7 +15,7 @@ namespace Presentation.Controllers
     public string? Password { get; set; }
   }
 
-  public class SignUpController(IValidation validation, IAddAccount addAccount, IDateTimeProvider dateTimeProvider)
+  public class SignUpController(IValidation validation, IAddAccount addAccount, IDateTimeProvider dateTimeProvider, IAuthentication authentication)
   {
     public async Task<IResponse> Handle(SignUpControllerRequest request)
     {
@@ -30,6 +30,12 @@ namespace Presentation.Controllers
           AddedAt = dateTimeProvider.UtcNow
         };
         await addAccount.Add(addAccountInput);
+        IAuthenticationInput authenticationInput = new AuthenticationInput()
+        {
+          Email = request.Email!,
+          Password = request.Password!
+        };
+        await authentication.Authenticate(authenticationInput);
         return HttpHelper.BadRequest(new Exception());
       }
       catch (ValidationException validationException)
