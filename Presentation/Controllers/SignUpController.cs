@@ -36,6 +36,10 @@ namespace Presentation.Controllers
       {
         return HttpHelper.BadRequest(validationException);
       }
+      catch (EmailInUseException emailInUseException)
+      {
+        return HttpHelper.Conflict(emailInUseException);
+      }
     }
   }
 }

@@ -14,5 +14,14 @@ namespace Presentation.Helpers
         Body = exception
       };
     }
+
+    public static IResponse Conflict(Exception exception)
+    {
+      return new Response()
+      {
+        StatusCode = 409,
+        Body = exception
+      };
+    }
   }
 }
