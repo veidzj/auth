@@ -1,4 +1,5 @@
 ﻿using Domain.Errors;
+using Domain.Models;
 using Domain.Usecases;
 using Presentation.Helpers;
 using Presentation.Implementations;
@@ -35,8 +36,8 @@ namespace Presentation.Controllers
           Email = request.Email!,
           Password = request.Password!
         };
-        await authentication.Authenticate(authenticationInput);
-        return HttpHelper.BadRequest(new Exception());
+        Account account = await authentication.Authenticate(authenticationInput);
+        return HttpHelper.Ok(account);
       }
       catch (ValidationException validationException)
       {

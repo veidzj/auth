@@ -7,6 +7,15 @@ namespace Presentation.Helpers
 {
   public static class HttpHelper
   {
+    public static IResponse Ok(object data)
+    {
+      return new Response()
+      {
+        StatusCode = 200,
+        Body = data
+      };
+    }
+
     public static IResponse BadRequest(Exception exception)
     {
       return new Response()
