@@ -2,7 +2,7 @@
 {
   public interface IResponse
   {
-    int StatusCode { get; }
-    object Body { get; }
+    int StatusCode { get; set; }
+    object Body { get; set; }
   }
 }

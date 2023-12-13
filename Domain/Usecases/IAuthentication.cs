@@ -5,8 +5,8 @@ namespace Domain.Usecases
 {
   public interface IAuthenticationInput
   {
-    string Email { get; }
-    string Password { get; }
+    string Email { get; set; }
+    string Password { get; set; }
   }
 
   public interface IAuthentication

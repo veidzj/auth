@@ -5,10 +5,10 @@ namespace Domain.Usecases
 {
   public interface IAddAccountInput
   {
-    string UserName { get; }
-    string Email { get; }
-    string Password { get; }
-    DateTime AddedAt { get; }
+    string UserName { get; set; }
+    string Email { get; set; }
+    string Password { get; set; }
+    DateTime AddedAt { get; set; }
   }
 
   public interface IAddAccount

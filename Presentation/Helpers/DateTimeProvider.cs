@@ -7,5 +7,4 @@ namespace Presentation.Helpers
   {
     public DateTime UtcNow => DateTime.UtcNow;
   }
-
 }
