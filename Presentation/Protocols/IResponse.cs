@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Protocols
 {
-  public interface Response
+  public interface IResponse
   {
     int StatusCode { get; }
     object Body { get; }

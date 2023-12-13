@@ -2,8 +2,8 @@
 
 namespace Presentation.Protocols
 {
-  public interface Controller<T>
+  public interface IController<C, R>
   {
-    Task<Response> Handle(T request);
+    Task<IResponse> Handle(R request);
   }
 }

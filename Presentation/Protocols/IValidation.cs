@@ -1,6 +1,6 @@
 ﻿namespace Presentation.Protocols
 {
-  public interface Validation
+  public interface IValidation
   {
     void Validate(object input);
   }

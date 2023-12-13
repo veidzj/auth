@@ -10,7 +10,7 @@ namespace Tests.Presentation.Controllers
   public class SignUpControllerTest
   {
     private Faker faker;
-    private Mock<Validation> validationMock;
+    private Mock<IValidation> validationMock;
     private SignUpController sut;
 
     private SignUpControllerRequest MockRequest()
@@ -28,7 +28,7 @@ namespace Tests.Presentation.Controllers
     public void Setup()
     {
       faker = new Faker();
-      validationMock = new Mock<Validation>();
+      validationMock = new Mock<IValidation>();
       sut = new SignUpController(validationMock.Object);
     }
 
