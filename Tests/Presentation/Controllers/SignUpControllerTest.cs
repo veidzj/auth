@@ -103,5 +103,20 @@ namespace Tests.Presentation.Controllers
         Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
       });
     }
+
+    [Test]
+    public async Task ShouldReturnInternalServerErrorIfAddAccountThrows()
+    {
+      SignUpControllerRequest request = MockRequest();
+      addAccountMock.Setup(a => a.Add(It.IsAny<IAddAccountInput>())).Throws(new Exception());
+      IResponse response = await sut.Handle(request);
+      Assert.Multiple(() =>
+      {
+        Assert.That(response.StatusCode, Is.EqualTo(500));
+        Assert.That(response.Body, Is.InstanceOf<ServerException>());
+        ServerException? exception = response.Body as ServerException;
+        Assert.That(exception?.Message, Is.EqualTo("Internal Server Error"));
+      });
+    }
   }
 }
