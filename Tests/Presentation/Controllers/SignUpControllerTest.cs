@@ -23,7 +23,6 @@ namespace Tests.Presentation.Controllers
     private Mock<IDateTimeProvider> dateTimeProviderMock;
     private Mock<IAuthentication> authenticationMock;
     private SignUpController sut;
-
     private Account account;
 
     private SignUpControllerRequest MockRequest()
