@@ -2,9 +2,8 @@
 using Moq;
 using NUnit.Framework;
 using Presentation.Controllers;
-using Presentation.Helpers;
 using Presentation.Protocols;
-using System;
+using ValidationException = Domain.Errors.ValidationException;
 
 namespace Tests.Presentation.Controllers
 {
@@ -46,8 +45,16 @@ namespace Tests.Presentation.Controllers
     public void ShouldReturnBadRequestIfValidationThrows()
     {
       SignUpControllerRequest request = MockRequest();
-      var response = sut.Handle(request);
-      Assert.That(response.StatusCode, Is.EqualTo(400));
+      string exceptionMessage = faker.Random.Word();
+      validationMock.Setup(v => v.Validate(It.IsAny<object>())).Throws(new ValidationException(exceptionMessage));
+      IResponse response = sut.Handle(request);
+      Assert.Multiple(() =>
+      {
+        Assert.That(response.StatusCode, Is.EqualTo(400));
+        Assert.That(response.Body, Is.InstanceOf<ValidationException>());
+        ValidationException? exception = response.Body as ValidationException;
+        Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
+      });
     }
   }
 }
