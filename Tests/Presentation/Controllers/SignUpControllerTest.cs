@@ -37,6 +37,15 @@ namespace Tests.Presentation.Controllers
       return request;
     }
 
+    private Account MakeAccount()
+    {
+      return new Account()
+      {
+        UserName = faker.Internet.UserName(),
+        AccessToken = faker.Random.Uuid().ToString()
+      };
+    }
+
     [SetUp]
     public void Setup()
     {
@@ -45,11 +54,7 @@ namespace Tests.Presentation.Controllers
       addAccountMock = new Mock<IAddAccount>();
       dateTimeProviderMock = new Mock<IDateTimeProvider>();
       authenticationMock = new Mock<IAuthentication>();
-      account = new()
-      {
-        UserName = faker.Internet.UserName(),
-        AccessToken = faker.Random.Uuid().ToString()
-      };
+      account = MakeAccount();
       authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).ReturnsAsync(account);
       sut = new SignUpController(validationMock.Object, addAccountMock.Object, dateTimeProviderMock.Object, authenticationMock.Object);
     }
