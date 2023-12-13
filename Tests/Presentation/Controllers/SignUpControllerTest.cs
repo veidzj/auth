@@ -24,11 +24,12 @@ namespace Tests.Presentation.Controllers
     private Mock<IDateTimeProvider> dateTimeProviderMock;
     private Mock<IAuthentication> authenticationMock;
     private SignUpController sut;
+    private SignUpControllerRequest request;
     private Account account;
 
     private SignUpControllerRequest MockRequest()
     {
-      SignUpControllerRequest request = new()
+      request = new()
       {
         UserName = faker.Internet.UserName(),
         Email = faker.Internet.Email(),
@@ -46,6 +47,7 @@ namespace Tests.Presentation.Controllers
       dateTimeProviderMock = new Mock<IDateTimeProvider>();
       authenticationMock = new Mock<IAuthentication>();
       account = MockAccount.Mock();
+      request = MockRequest();
       authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).ReturnsAsync(account);
       sut = new SignUpController(validationMock.Object, addAccountMock.Object, dateTimeProviderMock.Object, authenticationMock.Object);
     }
@@ -53,7 +55,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldCallValidationWithCorrectValues()
     {
-      SignUpControllerRequest request = MockRequest();
       await sut.Handle(request);
       validationMock.Verify(v => v.Validate(It.Is<object>(obj => obj == request)), Times.Once);
     }
@@ -61,7 +62,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldReturnBadRequestIfValidationThrows()
     {
-      SignUpControllerRequest request = MockRequest();
       string exceptionMessage = faker.Random.Word();
       validationMock.Setup(v => v.Validate(It.IsAny<object>())).Throws(new ValidationException(exceptionMessage));
       IResponse response = await sut.Handle(request);
@@ -77,7 +77,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldCallAddAccountWithCorrectValues()
     {
-      SignUpControllerRequest request = MockRequest();
       DateTime fakeDate = faker.Date.Recent();
       dateTimeProviderMock.Setup(m => m.UtcNow).Returns(fakeDate);
       IAddAccountInput addAccountInput = new AddAccountInput()
@@ -99,7 +98,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldReturnConflictIfAddAccountThrowsEmailInUseException()
     {
-      SignUpControllerRequest request = MockRequest();
       string exceptionMessage = faker.Random.Word();
       addAccountMock.Setup(a => a.Add(It.IsAny<IAddAccountInput>())).Throws(new EmailInUseException(exceptionMessage));
       IResponse response = await sut.Handle(request);
@@ -115,7 +113,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldReturnInternalServerErrorIfAddAccountThrows()
     {
-      SignUpControllerRequest request = MockRequest();
       addAccountMock.Setup(a => a.Add(It.IsAny<IAddAccountInput>())).Throws(new Exception());
       IResponse response = await sut.Handle(request);
       Assert.Multiple(() =>
@@ -130,7 +127,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldCallAuthenticationWithCorrectValues()
     {
-      SignUpControllerRequest request = MockRequest();
       IAuthenticationInput authenticationInput = new AuthenticationInput()
       {
         Email = request.Email!,
@@ -146,7 +142,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldReturnUnauthorizedIfAuthenticationThrowsInvalidCredentialsException()
     {
-      SignUpControllerRequest request = MockRequest();
       string exceptionMessage = faker.Random.Word();
       authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).Throws(new InvalidCredentialsException(exceptionMessage));
       IResponse response = await sut.Handle(request);
@@ -162,7 +157,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldReturnInternalServerErrorIfAuthenticationThrows()
     {
-      SignUpControllerRequest request = MockRequest();
       authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).Throws(new Exception());
       IResponse response = await sut.Handle(request);
       Assert.Multiple(() =>
@@ -177,7 +171,6 @@ namespace Tests.Presentation.Controllers
     [Test]
     public async Task ShouldReturnOkOnSuccess()
     {
-      SignUpControllerRequest request = MockRequest();
       IResponse response = await sut.Handle(request);
       Assert.Multiple(() =>
       {
