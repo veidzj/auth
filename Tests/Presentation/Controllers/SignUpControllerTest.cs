@@ -153,5 +153,20 @@ namespace Tests.Presentation.Controllers
         Assert.That(exception?.Message, Is.EqualTo(exceptionMessage));
       });
     }
+
+    [Test]
+    public async Task ShouldReturnInternalServerErrorIfAuthenticationThrows()
+    {
+      SignUpControllerRequest request = MockRequest();
+      authenticationMock.Setup(a => a.Authenticate(It.IsAny<IAuthenticationInput>())).Throws(new Exception());
+      IResponse response = await sut.Handle(request);
+      Assert.Multiple(() =>
+      {
+        Assert.That(response.StatusCode, Is.EqualTo(500));
+        Assert.That(response.Body, Is.InstanceOf<ServerException>());
+        ServerException? exception = response.Body as ServerException;
+        Assert.That(exception?.Message, Is.EqualTo("Internal Server Error"));
+      });
+    }
   }
 }
